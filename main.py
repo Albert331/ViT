@@ -35,8 +35,8 @@ if __name__ == '__main__':
     train,test = random_split(fullES,[int(0.8 * len(fullES)),len(fullES) - (int(0.8 * len(fullES)))])
 
 
-    train_loader  = DataLoader(train,shuffle=True,batch_size=32,num_workers=6,persistent_workers=True,pin_memory=True)
-    test_loader  = DataLoader(test,shuffle=True,batch_size=32,num_workers=6,persistent_workers=True,pin_memory=True)
+    train_loader  = DataLoader(train,shuffle=True,batch_size=32,num_workers=8,persistent_workers=True,pin_memory=True)
+    test_loader  = DataLoader(test,shuffle=True,batch_size=32,num_workers=88,persistent_workers=True,pin_memory=True)
 
 
 
@@ -45,7 +45,7 @@ if __name__ == '__main__':
     optimizer = torch.optim.Adam(model.parameters(),lr=1e-3)
 
     epoch = 5
-
+    gradScaler = torch.amp.GradScaler(device=device)
 
     print('='*50)
     for _ in range(epoch):
@@ -58,11 +58,13 @@ if __name__ == '__main__':
             label=label.to(device)
 
             optimizer.zero_grad()
-            out = model(img)
-            loss = crit(out,label)
+            with torch.amp.autocast(device_type=device):
+                out = model(img)
+                loss = crit(out,label)
 
-            loss.backward()
-            optimizer.step()
+            gradScaler.scale(loss).backward()
+            gradScaler.step(optimizer)
+            gradScaler.update()
 
             pred = torch.argmax(out, dim=1)
             correct += (pred == label).sum().item()
