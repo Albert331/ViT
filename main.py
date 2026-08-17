@@ -1,9 +1,10 @@
 import torch
 import torchvision
-# from torch.utils.data import Dataset
 import torch.nn as nn
 from torch.utils.data import DataLoader,random_split
 from torchvision.transforms import v2
+
+from TransformerBlock import TransformerBlock
 
 data_transform = v2.Compose([
     v2.ToTensor(),
@@ -21,24 +22,8 @@ train,test = random_split(fullES,[int(0.8 * len(fullES)),len(fullES) - (int(0.8 
 train_loader  = DataLoader(train,shuffle=True,batch_size=32,num_workers=6,persistent_workers=True,pin_memory=True)
 test_loader  = DataLoader(test,shuffle=True,batch_size=32,num_workers=6,persistent_workers=True,pin_memory=True)
 
-fir = next(iter(train_loader))
-print(fir)
 
 
-class PatchEmbedding(nn.Module):
-    def __init__(self):
-        super().__init__()
-        self.patch_embed = nn.Conv2d(3,128,8,stride=8)
-
-    def forward(self,x):
-        x=self.patch_embed(x)
-        x=x.flatten(2)
-        x=x.transpose(1,2)    
-        return x
 
 
-class transformer_encoder(nn.Module):
-    def __init__(self):
-        super().__init__()
-        self.ln1 = nn.LayerNorm(128)
-        
+
