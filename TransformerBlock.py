@@ -10,14 +10,11 @@ class TransformerBlock(nn.Module):
     def __init__(self):
         super().__init__()
         self.mlp = MLP()
-        self.multiheadattn = MultiHead()
+        self.multiheadattn = MultiHead(12)
         self.ln1 = nn.LayerNorm(128)
         self.ln2 = nn.LayerNorm(128)
     def forward(self,x):
-        x = self.patching(x)
-        cls = self.cls.expand(x.shape[0], -1, -1)
-        x = torch.cat((cls, x), dim=1)
-        x = x + self.pe
+       
 
 
         res1 = x

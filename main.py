@@ -4,7 +4,13 @@ import torch.nn as nn
 from torch.utils.data import DataLoader,random_split
 from torchvision.transforms import v2
 
-from TransformerBlock import TransformerBlock
+from Vit import Vit
+
+device = 'cuda' if torch.cuda.is_available() else 'cpu'
+
+model =  Vit()
+model = model.to(device)
+
 
 data_transform = v2.Compose([
     v2.ToTensor(),
@@ -25,5 +31,48 @@ test_loader  = DataLoader(test,shuffle=True,batch_size=32,num_workers=6,persiste
 
 
 
+crit = nn.CrossEntropyLoss()
+optimizer = torch.optim.Adam(model.parameters(),lr=1e-3)
+
+epoch = 5
+
+for _ in range(epoch):
+    model.train()
+    losslist=[]
+    correct=0
+    total=0
+    for img,label in train_loader:
+        img=img.to(device)
+        label=label.to(device)
+
+        optimizer.zero_grad()
+        out = model(img)
+        loss = crit(out,label)
+
+        loss.backward()
+        optimizer.step()
+
+        pred = torch.argmax(out, dim=1)
+        correct += (pred == label).sum().item()
+        total += label.size(0)
+        losslist.append(loss.item())
+    print(f'epoch:{_+1} | avg loss:{sum(losslist)/len(losslist)} | accuracy:{correct/total}')
 
 
+    val_losslist=[]
+    val_correct=0
+    val_total=0
+    model.eval()
+    with torch.no_grad():
+        for img,label in test_loader:
+            img=img.to(device)
+            label=label.to(device)
+            out = model(img)
+            loss = crit(out,label)
+            
+            pred = torch.argmax(out, dim=1)
+            val_correct += (pred == label).sum().item()
+            val_total += label.size(0)
+            val_losslist.append(loss.item())
+
+        print(f'epoch:{_+1} | avg loss:{sum(val_losslist)/len(val_losslist)} | accuracy:{val_correct/val_total}')    

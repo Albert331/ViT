@@ -4,7 +4,7 @@ import torch.nn as nn
 class PatchEmbedding(nn.Module):
     def __init__(self):
         super().__init__()
-        self.patch_embed = nn.Conv2d(3,128,8,stride=8)
+        self.patch_embed = nn.Conv2d(3,128,4,stride=4)
 
     def forward(self,x):
         x=self.patch_embed(x)

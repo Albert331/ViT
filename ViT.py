@@ -10,7 +10,10 @@ class Vit(nn.Module):
         self.blocks=nn.ModuleList([TransformerBlock() for _ in range(6)])
                 
         self.cls = nn.Parameter(torch.randn(1, 1, 128))
-        self.pe = nn.Parameter(torch.randn(1, 197, 128))
+        self.pe = nn.Parameter(torch.randn(1, 257, 128))
+
+        self.ln = nn.LayerNorm(128)
+        self.fc=nn.Linear(128,10)
 
     def forward(self,x):
         x = self.patching(x)
@@ -20,4 +23,7 @@ class Vit(nn.Module):
         for block in self.blocks:
             x = block(x)
 
+        x=self.ln(x)
+        x=x[:,0]
+        x=self.fc(x)
         return x
