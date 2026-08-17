@@ -36,7 +36,7 @@ if __name__ == '__main__':
 
 
     train_loader  = DataLoader(train,shuffle=True,batch_size=32,num_workers=8,persistent_workers=True,pin_memory=True)
-    test_loader  = DataLoader(test,shuffle=True,batch_size=32,num_workers=88,persistent_workers=True,pin_memory=True)
+    test_loader  = DataLoader(test,shuffle=True,batch_size=32,num_workers=8,persistent_workers=True,pin_memory=True)
 
 
 
@@ -44,7 +44,7 @@ if __name__ == '__main__':
     crit = nn.CrossEntropyLoss()
     optimizer = torch.optim.Adam(model.parameters(),lr=1e-3)
 
-    epoch = 5
+    epoch = 15
     gradScaler = torch.amp.GradScaler(device=device)
 
     print('='*50)
