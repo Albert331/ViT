@@ -10,7 +10,7 @@ class TransformerBlock(nn.Module):
     def __init__(self):
         super().__init__()
         self.mlp = MLP()
-        self.multiheadattn = MultiHead(12)
+        self.multiheadattn = MultiHead(8)
         self.ln1 = nn.LayerNorm(128)
         self.ln2 = nn.LayerNorm(128)
     def forward(self,x):
